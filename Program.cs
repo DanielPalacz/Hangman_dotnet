@@ -21,6 +21,10 @@ namespace Hangman_dotnet
 			_name = file_name;
 		}
 		
+		~FileParserBase() {   //destructor
+			Console.WriteLine("Object is being deleted");
+		}
+		
 		public int GetNumLines() {
 			return _lineNum;
 		}
@@ -40,11 +44,56 @@ namespace Hangman_dotnet
 			return _capitalsNamesDict[RandomCountry];
 		}
 	}
+
+	class Game {
+		private String _capital;
+		private String _country;
+		private Char [] _capitalCharsNotWhite; // ToLower, NotWhite
+		private Char [] _charsGuessedByPlayer;
+		private Boolean _gameEnd;
+
+		public Game (String RandomCapital, String RandomCountry) {
+			_capital = RandomCapital;
+			_country = RandomCountry;
+			String _stemp = "";
+			foreach (Char c in RandomCapital.ToLower()) {
+				if (_stemp.Contains(c) | " ".Contains(c)) {
+					continue;
+				}
+				else {
+					_stemp = _stemp + c;
+				}
+			}
+			_capitalCharsNotWhite = _stemp.ToCharArray();
+			_gameEnd = false;
+
+		}
+
+		public String GetGuessedCountry() {
+			return _country;
+		}
+		public Char [] GetGuessedCapitalCharsNotWhite() {
+			return _capitalCharsNotWhite;
+		}
+
+		public void RunGame() {
+			//
+		}
+		
+		public void PrintEncryptedWord() {
+			//
+		}
+		
+		public void AskPlayerAboutAction() {
+			Console.WriteLine("Would you like to guess single letter or whole Word?");
+			// String _typedText = Console.ReadLine();
+		}
+	}
 	
 
     class Program
     {
-        static void Main(string[] args) { 
+        static void Main(String[] args) { 
 			Console.WriteLine("Lets start with this... \n");
 			FileParserBase fpb = new FileParserBase("countries_and_capitals.txt");
 
@@ -53,6 +102,11 @@ namespace Hangman_dotnet
 			String RCapital = fpb.GetCountryCapital(RCountry);
 			Console.WriteLine("RandomCountry: " + RCountry + " RandomCapital: " + RCapital);
 
+			Game HangmanGameObj = new Game(RCapital, RCountry);
+			Console.WriteLine(HangmanGameObj.GetGuessedCountry());
+			Console.WriteLine(HangmanGameObj.GetGuessedCapitalCharsNotWhite());
+			HangmanGameObj.AskPlayerAboutAction();
+			//
         }
     }
 }
