@@ -44,15 +44,15 @@ namespace Hangman_dotnet
 
     class Program
     {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Lets start with this... \n");
-			// Capitals c1 = new Capitals("countries_and_capitals.txt");
+        static void Main(string[] args) { 
+			Console.WriteLine("Lets start with this... \n");
 			FileParserBase fpb = new FileParserBase("countries_and_capitals.txt");
+
 			// Get Random Country-Capital:
 			String RCountry = fpb.GetRandomCountry();
 			String RCapital = fpb.GetCountryCapital(RCountry);
 			Console.WriteLine("RandomCountry: " + RCountry + " RandomCapital: " + RCapital);
+
         }
     }
 }
