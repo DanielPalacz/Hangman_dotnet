@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Timers;
+using System.Threading.Tasks;
 
 
 namespace Hangman_dotnet
@@ -16,7 +18,7 @@ namespace Hangman_dotnet
 			foreach (string line in lines_temp) {
 				i_temp++;
 				String[] line_t = line.Split(" | ", 2, StringSplitOptions.RemoveEmptyEntries);
-				_capitalsNamesDict.Add(line_t[0], line_t[1]);		  
+				_capitalsNamesDict.Add(line_t[0], line_t[1]);
 			}
 			_lineNum = i_temp;
 			_name = file_name;
@@ -100,10 +102,41 @@ namespace Hangman_dotnet
 			Console.WriteLine("---> type 'L' if you want to guess 'single letter'");
 			Console.WriteLine("---> type 'W' if you want to guess 'whole word'");
 			Console.WriteLine("\nCaution!!!\n---> if you dont choose neither 'L' nor 'W' then you lose 1 LP (1 Life Point).");
-			Console.WriteLine("---> you have 5 seconds to make decision (lack of decision during this means 1 LP deduction and lossing the given round) ");
+			Console.WriteLine("---> you have 5 seconds to make decision (lack of decision during this means 1 LP deduction and lossing the given round)\n");
+			while (true) {
+				SetTimer();
+				// try
+				Console.WriteLine("-----");
+			}
+			Console.WriteLine("It fucking works!!!!");
 			Char _c = Console.ReadKey().KeyChar;
 			Console.Clear();
 			return _c;
+			
+			System.Timers.Timer aTimer;
+			
+			void SetTimer() {
+				// Create a timer with a two second interval.
+				aTimer = new System.Timers.Timer(3000);
+				// Hook up the Elapsed event for the timer. 
+				aTimer.Elapsed += async ( sender, e ) => await HandleTimer();
+				//aTimer.AutoReset = true;
+				aTimer.Enabled = true;
+			}
+			
+			void OnTimedEvent(Object source, ElapsedEventArgs e) {
+				Console.WriteLine("The Elapsed event was raised at {0:HH:mm:ss.fff}", e.SignalTime);
+				aTimer.Stop();
+				aTimer.Dispose();
+				Console.WriteLine("\nTime ending exception handler..." );
+				throw new NotImplementedException();
+			}
+
+			Task HandleTimer() {
+				Console.WriteLine("\nTime ending exception handler..." );
+				throw new NotImplementedException();
+			}
+
 		}
 		
 		public void PrintGameInstructionBoard() {
