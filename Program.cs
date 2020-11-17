@@ -77,19 +77,38 @@ namespace Hangman_dotnet
 			return _capitalCharsNotWhite;
 		}
 
-		public void RunGame() {
+		public void RunGame(Player PlayerObj) {
+			Console.WriteLine("Hi {0}. Hello in the Hangman!", PlayerObj._name);
+			PrintEncryptedWord();
 			while(! _gameEnd) {
-				//
+				Char _nextMove = GetPlayerGameNextTypeOfMove();
+				// PlayerObj.ProvideLetter();
 			}
 		}
+
+		public Char GetPlayerGameNextTypeOfMove() {
+			Console.WriteLine("Would you like to guess 1 letter or whole Word?");
+
+			Console.WriteLine("Type L if you want to guess 1 Letter. It costs 1 Life point. You will have 5 seconds for making decision.");
+			Console.WriteLine("Type W if you want to guess whole Word. It costs 2 Life points. You will have 10 seconds for making decision.");
+			Char _c = Console.ReadKey().KeyChar;
+			return _c;
+		}
+		
+		public void PrintGameInstructionBoard() {
+			Console.WriteLine("Game Instruiction:");
+			Console.WriteLine("-- You are starting a game with given number of Life Points.");
+			Console.WriteLine("-- In every Game iteration(round) are asked if yoy prefer to guess 1 letter or whole Word.");
+			Console.WriteLine("Type L if you want to guess 1 Letter. It costs 1 Life point. You will have 5 seconds for making decision.");
+			Console.WriteLine("Type W if you want to guess whole Word. It costs 2 Life points. You will have 10 seconds for making decision.");
+		}
+
+
+
+
 		
 		public void UpdateGameState() {
 			//
-		}
-
-		public void AskPlayerAboutAction() {
-			Console.WriteLine("Would you like to guess single letter or whole Word?");
-			// String _typedText = Console.ReadLine();
 		}
 		
 		public void PrintEncryptedWord() {
@@ -105,7 +124,27 @@ namespace Hangman_dotnet
 					_tempEncryptedWord = _tempEncryptedWord + dash;
 				}
 			}
-			Console.WriteLine("Guessed word: " + _tempEncryptedWord);
+			Console.WriteLine("You are guessing the following word(s): " + _tempEncryptedWord + "\n\n");
+		}
+	}
+	
+	class Player {
+		public String _name;
+		private int _lifePoints;
+
+		public Player (String name) {
+			_name = name;
+			_lifePoints = 5;
+		}
+		
+		public Char ProvideLetter () {
+			Char _letter = Console.ReadKey().KeyChar;
+			return _letter;
+		}
+		
+		public String GuessWord () {
+			String _word =  Console.ReadLine();;
+			return _word;
 		}
 	}
 	
@@ -113,20 +152,17 @@ namespace Hangman_dotnet
     class Program
     {
         static void Main(String[] args) {			
-			Console.WriteLine("Lets start with this... \n");
-			FileParserBase fpb = new FileParserBase("countries_and_capitals.txt");
-
 			// Get Random Country-Capital:
+			FileParserBase fpb = new FileParserBase("countries_and_capitals.txt");
 			String RCountry = fpb.GetRandomCountry();
 			String RCapital = fpb.GetCountryCapital(RCountry);
-			Console.WriteLine("RandomCountry: " + RCountry + " RandomCapital: " + RCapital);
 
+			// Start playing:
 			Game HangmanGameObj = new Game(RCapital, RCountry);
-			Console.WriteLine(HangmanGameObj.GetGuessedCountry());
-			Console.WriteLine(HangmanGameObj.GetGuessedCapitalCharsNotWhite());
-			Console.WriteLine("---");
-			HangmanGameObj.PrintEncryptedWord();
-			//
+			Console.WriteLine("------------------------------------------------------------------");
+			Console.WriteLine();
+			Player FirstPlayerEver = new Player("John");
+			HangmanGameObj.RunGame(FirstPlayerEver);
         }
     }
 }
