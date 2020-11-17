@@ -78,35 +78,50 @@ namespace Hangman_dotnet
 		}
 
 		public void RunGame(Player PlayerObj) {
-			Console.WriteLine("Hi {0}. Hello in the Hangman!", PlayerObj._name);
+			Console.Clear();
+			Console.WriteLine("Hi {0}. Hello in the Hangman! Lets play!\n\n", PlayerObj._name);
+			PrintGameInstructionBoard();
 			PrintEncryptedWord();
 			while(! _gameEnd) {
 				Char _nextMove = GetPlayerGameNextTypeOfMove();
-				// PlayerObj.ProvideLetter();
+				if (_nextMove == 'L') {
+					// PlayerObj.ProvideLetter();
+				}
+				else if (_nextMove == 'L') {
+					// PlayerObj.GuessWord;
+				}
+				else {
+				}
 			}
 		}
 
 		public Char GetPlayerGameNextTypeOfMove() {
-			Console.WriteLine("Would you like to guess 1 letter or whole Word?");
-
-			Console.WriteLine("Type L if you want to guess 1 Letter. It costs 1 Life point. You will have 5 seconds for making decision.");
-			Console.WriteLine("Type W if you want to guess whole Word. It costs 2 Life points. You will have 10 seconds for making decision.");
+			Console.WriteLine("Would you like to guess 'single letter' or 'whole word'?");
+			Console.WriteLine("---> type 'L' if you want to guess 'single letter'");
+			Console.WriteLine("---> type 'W' if you want to guess 'whole word'");
+			Console.WriteLine("\nCaution!!!\n---> if you dont choose neither 'L' nor 'W' then you lose 1 LP (1 Life Point).");
+			Console.WriteLine("---> you have 5 seconds to make decision (lack of decision during this means 1 LP deduction and lossing the given round) ");
 			Char _c = Console.ReadKey().KeyChar;
+			Console.Clear();
 			return _c;
 		}
 		
 		public void PrintGameInstructionBoard() {
-			Console.WriteLine("Game Instruiction:");
-			Console.WriteLine("-- You are starting a game with given number of Life Points.");
-			Console.WriteLine("-- In every Game iteration(round) are asked if yoy prefer to guess 1 letter or whole Word.");
-			Console.WriteLine("Type L if you want to guess 1 Letter. It costs 1 Life point. You will have 5 seconds for making decision.");
-			Console.WriteLine("Type W if you want to guess whole Word. It costs 2 Life points. You will have 10 seconds for making decision.");
+			Console.WriteLine("Game Instruction:");
+			Console.WriteLine("-- the player starts a game with given number of Life Points");
+			Console.WriteLine("-- every round the player is asked if he/she prefers to guess 'single letter' or 'whole word'");
+			Console.WriteLine("----- the player has 10 seconds for making decision\n");
+			Console.WriteLine("-- guessing 'single letter':");
+			Console.WriteLine("----- the player loses 1 Life point if A-provided-letter is not in the guessd word");
+			Console.WriteLine("----- the player has 5 seconds for action\n");
+			Console.WriteLine("-- guessing 'whole word':");
+			Console.WriteLine("----- the player loses 2 Life point if A-provided-word is not the same as guessd word");
+			Console.WriteLine("----- the player has 10 seconds for action\n\n\n\n");
+			Console.WriteLine("Are you ready to start? Type anything if yes.");
+			Console.ReadKey();
+			Console.Clear();
 		}
 
-
-
-
-		
 		public void UpdateGameState() {
 			//
 		}
