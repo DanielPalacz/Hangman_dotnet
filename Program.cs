@@ -80,62 +80,80 @@ namespace Hangman_dotnet
 		}
 
 		public void RunGame(Player PlayerObj) {
+			Console.ReadKey();
 			Console.Clear();
 			Console.WriteLine("Hi {0}. Hello in the Hangman! Lets play!\n\n", PlayerObj._name);
 			PrintGameInstructionBoard();
 			PrintEncryptedWord();
 			while(! _gameEnd) {
-				Char _nextMove = GetPlayerGameNextTypeOfMove();
-				if (_nextMove == 'L') {
+				Char nextMove = GetPlayerGameNextTypeOfMove();
+				if (nextMove == 'L' | nextMove == 'l') {
+					Console.WriteLine("Guess letter. --------------------------------------");
+					Console.ReadKey();
 					// PlayerObj.ProvideLetter();
 				}
-				else if (_nextMove == 'L') {
+				else if (nextMove == 'W' | nextMove == 'w') {
 					// PlayerObj.GuessWord;
 				}
 				else {
+					Console.WriteLine("Incorrect Value or lack of decision in 5 seconds. You lose 1 Life Point.");
+					Console.ReadKey();
 				}
 			}
 		}
 
 		public Char GetPlayerGameNextTypeOfMove() {
 			Console.WriteLine("Would you like to guess 'single letter' or 'whole word'?");
-			Console.WriteLine("---> type 'L' if you want to guess 'single letter'");
-			Console.WriteLine("---> type 'W' if you want to guess 'whole word'");
+			Console.WriteLine("---> type 'L(l)' if you want to guess 'single letter'");
+			Console.WriteLine("---> type 'W(w)' if you want to guess 'whole word'");
 			Console.WriteLine("\nCaution!!!\n---> if you dont choose neither 'L' nor 'W' then you lose 1 LP (1 Life Point).");
-			Console.WriteLine("---> you have 5 seconds to make decision (lack of decision during this means 1 LP deduction and lossing the given round)\n");
-			while (true) {
-				SetTimer();
-				// try
-				Console.WriteLine("-----");
+			Console.WriteLine("---> you have 5 seconds to make decision (lack of decision during this means 1 LP deduction and lossing the given round)\n\n");
+			// Char c = '$';
+			int cnt = 1;
+			ConsoleKeyInfo c = new ConsoleKeyInfo();
+			while (cnt < 6) {
+				if (Console.KeyAvailable) {
+					c = Console.ReadKey();
+					break;
+				}
+				else {
+					System.Threading.Thread.Sleep(1000);
+				}
+				cnt++;
 			}
-			Console.WriteLine("It fucking works!!!!");
-			Char _c = Console.ReadKey().KeyChar;
-			Console.Clear();
-			return _c;
-			
-			System.Timers.Timer aTimer;
-			
-			void SetTimer() {
-				// Create a timer with a two second interval.
-				aTimer = new System.Timers.Timer(3000);
+
+			return c.KeyChar;
+
+			// System.Timers.Timer aTimer;
+			void SetTimer(Timer aTimer) {
 				// Hook up the Elapsed event for the timer. 
-				aTimer.Elapsed += async ( sender, e ) => await HandleTimer();
+				aTimer.Elapsed += OnTimedEvent;
 				//aTimer.AutoReset = true;
 				aTimer.Enabled = true;
 			}
-			
 			void OnTimedEvent(Object source, ElapsedEventArgs e) {
 				Console.WriteLine("The Elapsed event was raised at {0:HH:mm:ss.fff}", e.SignalTime);
-				aTimer.Stop();
-				aTimer.Dispose();
-				Console.WriteLine("\nTime ending exception handler..." );
-				throw new NotImplementedException();
+				// aTimer.Stop();
+				// aTimer.Dispose();
 			}
 
-			Task HandleTimer() {
-				Console.WriteLine("\nTime ending exception handler..." );
-				throw new NotImplementedException();
+			Char MakeDecisionInFiveSec() {
+				ConsoleKeyInfo k = new ConsoleKeyInfo();
+				for (int cnt = 5; cnt > 0; cnt--) {
+					if (Console.KeyAvailable) {
+						k = Console.ReadKey();
+						break;
+					}
+					else {
+						System.Threading.Thread.Sleep(1000);
+					}
+					if (cnt == 1) {
+						throw new TimerException("Time Over.");
+					}
+				}
+				return k.KeyChar;
 			}
+
 
 		}
 		
@@ -172,7 +190,7 @@ namespace Hangman_dotnet
 					_tempEncryptedWord = _tempEncryptedWord + dash;
 				}
 			}
-			Console.WriteLine("You are guessing the following word(s): " + _tempEncryptedWord + "\n\n");
+			Console.WriteLine("\n\n\n" + "You are guessing the following word(s): " + _tempEncryptedWord + "\n\n\n");
 		}
 	}
 	
@@ -196,6 +214,11 @@ namespace Hangman_dotnet
 		}
 	}
 	
+	public class TimerException: Exception {
+		public TimerException(string message): base(message) {
+		}
+	}
+	
 
     class Program
     {
@@ -211,6 +234,20 @@ namespace Hangman_dotnet
 			Console.WriteLine();
 			Player FirstPlayerEver = new Player("John");
 			HangmanGameObj.RunGame(FirstPlayerEver);
+
+
+			//
+			ConsoleKeyInfo k = new ConsoleKeyInfo();
+			Console.WriteLine("Press any key in the next 5 seconds.");
+			for (int cnt = 5; cnt > 0; cnt--) {
+				if (Console.KeyAvailable) {
+					k = Console.ReadKey();
+					break;
+				}
+				else { 
+					System.Threading.Thread.Sleep(1000);
+				}
+			}
         }
     }
 }
