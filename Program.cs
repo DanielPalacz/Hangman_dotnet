@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 
 namespace Hangman_dotnet
@@ -77,23 +78,41 @@ namespace Hangman_dotnet
 		}
 
 		public void RunGame() {
-			//
+			while(! _gameEnd) {
+				//
+			}
 		}
 		
-		public void PrintEncryptedWord() {
+		public void UpdateGameState() {
 			//
 		}
-		
+
 		public void AskPlayerAboutAction() {
 			Console.WriteLine("Would you like to guess single letter or whole Word?");
 			// String _typedText = Console.ReadLine();
+		}
+		
+		public void PrintEncryptedWord() {
+			String _tempEncryptedWord = "";
+			String _tempGuessedChars = new string(_charsGuessedByPlayer);
+			String dash = "-";
+			foreach (Char c in _capital) {
+				if (_tempGuessedChars.Contains(c) | " ".Contains(c)) {
+
+					_tempEncryptedWord = _tempEncryptedWord + c;
+				}
+				else {
+					_tempEncryptedWord = _tempEncryptedWord + dash;
+				}
+			}
+			Console.WriteLine("Guessed word: " + _tempEncryptedWord);
 		}
 	}
 	
 
     class Program
     {
-        static void Main(String[] args) { 
+        static void Main(String[] args) {			
 			Console.WriteLine("Lets start with this... \n");
 			FileParserBase fpb = new FileParserBase("countries_and_capitals.txt");
 
@@ -105,7 +124,8 @@ namespace Hangman_dotnet
 			Game HangmanGameObj = new Game(RCapital, RCountry);
 			Console.WriteLine(HangmanGameObj.GetGuessedCountry());
 			Console.WriteLine(HangmanGameObj.GetGuessedCapitalCharsNotWhite());
-			HangmanGameObj.AskPlayerAboutAction();
+			Console.WriteLine("---");
+			HangmanGameObj.PrintEncryptedWord();
 			//
         }
     }
