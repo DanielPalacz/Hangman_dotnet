@@ -29,11 +29,11 @@ namespace Hangman_dotnet
 			Console.WriteLine("Object is being deleted");
 		}
 		
-		public int GetNumLines() {
+		private int GetNumLines() {
 			return _lineNum;
 		}
 		
-		public Dictionary<String, String>  GetCapitalNamesDict() {
+		private Dictionary<String, String>  GetCapitalNamesDict() {
 			return _capitalsNamesDict;
 		}
 		
@@ -55,6 +55,7 @@ namespace Hangman_dotnet
 		private Char [] _capitalCharsNotWhite; // ToLower, NotWhite
 		private String _lettersProvidedByPlayer;
 		private Boolean _gameEnd;
+		private Boolean _gameEndWin;
 		private int _lifePoints;
 		private int _guessingTries;
 
@@ -72,6 +73,7 @@ namespace Hangman_dotnet
 			}
 			_capitalCharsNotWhite = _stemp.ToCharArray();
 			_gameEnd = false;
+			_gameEndWin = false;
 			_lifePoints = 10;
 			_lettersProvidedByPlayer = "";
 			_guessingTries = 0;
@@ -86,7 +88,7 @@ namespace Hangman_dotnet
 
 		public void RunGame(Player PlayerObj) {
 			Console.Clear();
-			Console.WriteLine("Hi {0}. Hello in the Hangman! Lets play!\n\n", PlayerObj._name);
+			Console.WriteLine("Hello in the Hangman! Lets play!\n\n");
 			PrintGameInstructionBoard();
 			Stopwatch gameWatcher = Stopwatch.StartNew();
 			while (! _gameEnd) {
@@ -100,14 +102,22 @@ namespace Hangman_dotnet
 					UpdateGameState(PlayerObj.GuessWord());
 				}
 				else {
-					Console.WriteLine("Incorrect Value or lack of decision in 5 seconds. You lost 1 Life Point.");
+					Console.WriteLine("\nIncorrect Value or lack of decision in 5 seconds. You lost 1 Life Point.");
 					UpdateGameState(-1);
 				}
 				PrintHint();
 			}
 			gameWatcher.Stop();
-			if (_gameEnd & _lifePoints >= 0) {
-				Console.WriteLine("{0} | {1} | {2} | {3}sec | {4}", PlayerObj._name, DateTime.Now, _lifePoints, gameWatcher.ElapsedMilliseconds/1000, _capital);
+			if (_gameEndWin) {
+				Console.WriteLine();
+				Console.WriteLine("You Win. The word/capital was guessed by you in {0} game iteration. It took you {1} seconds.", 
+					_guessingTries, gameWatcher.ElapsedMilliseconds / 1000);
+				//Console.WriteLine("{0}|{1}/10|{2}sec|{3}|", DateTime.Now, _lifePoints, gameWatcher.ElapsedMilliseconds/1000, _capital);
+			}
+			else if (_gameEnd) {
+				Console.WriteLine();
+				Console.WriteLine("You failled. The word/capital was Not guessed by you in {0} game iteration. The Game took you {1} seconds.", 
+					_guessingTries, gameWatcher.ElapsedMilliseconds / 1000);
 			}
 		}
 
@@ -179,6 +189,7 @@ namespace Hangman_dotnet
 				if (tempBool) {
 					Console.WriteLine("\nYou guessed the word '{0}'. Congratulations. Your points: '{1}'", _capital, _lifePoints);
 					_gameEnd = tempBool;
+					_gameEndWin = true;
 				}
 			}
 			else {
@@ -197,6 +208,7 @@ namespace Hangman_dotnet
 				Console.WriteLine("\nHurra you guessed. The word it was really: {0}", _capital);
 				Console.WriteLine("You finish the game with {0} life Points", _lifePoints);
 				_gameEnd = true;
+				_gameEndWin = true;
 			}
 			else if (_lifePoints < 2) {
 				Console.WriteLine("You did not guess. Your Life Points ended. Game Over...");
@@ -211,9 +223,8 @@ namespace Hangman_dotnet
 
 		private void UpdateGameState(int n) {
 			_lifePoints = _lifePoints + n;
-			_lifePoints = _lifePoints + n;
 			if (_lifePoints < 0) {
-				Console.WriteLine("Game Over...");
+				Console.WriteLine("Life points ended. Game Over...");
 				_lifePoints = 0;
 				_gameEnd = true;
 			}
@@ -235,7 +246,6 @@ namespace Hangman_dotnet
 				}
 			}
 			Console.WriteLine("\n\n\n" + "You are guessing the following word(s): " + _tempEncryptedWord);
-			Console.WriteLine(_capital);
 			PrintNotGuessedLetters();
 			Console.WriteLine("You have {0} Life Points.\n\n\n", _lifePoints);
 		}
@@ -252,6 +262,7 @@ namespace Hangman_dotnet
 		}
 		private void PrintHint() {
 			if (_lifePoints == 0 & (!_gameEnd)) {
+				Console.Clear();
 				Console.WriteLine("\n\nHint!!!");
 				Console.WriteLine("The guessed word it is capital of {0}", _country);
 			}
@@ -260,11 +271,6 @@ namespace Hangman_dotnet
 	}
 	
 	class Player {
-		public String _name;
-
-		public Player (String name) {
-			_name = name;
-		}
 		
 		public Char ProvideLetter () {
 			Console.WriteLine("\nOk, you chose guessing single letter option. Please provide single letter in 5 seconds.");
@@ -318,15 +324,16 @@ namespace Hangman_dotnet
 			while (true) {
 				// Start playing:
 				Game HangmanGameObj = new Game(fpb.GetCountryCapital(RCountry), RCountry);
-				Console.WriteLine("What is your name?");
-				String playerName = Console.ReadLine();
-				Player FirstPlayerEver = new Player(playerName);
+				//Console.WriteLine("What is your name?");
+				//String playerName = Console.ReadLine();
+				Player FirstPlayerEver = new Player();
 				HangmanGameObj.RunGame(FirstPlayerEver);
 				//
-				//
-				Console.WriteLine("Do play further? Type 'y' or 'Y' if yes.");
+				Console.WriteLine("\n\n");
+				Console.WriteLine("Do you want to play again? Type 'y' or 'Y' if yes.");
 				Char playFurther = Console.ReadKey().KeyChar;
 				if (playFurther.ToString().ToLower() == "y") {
+					Console.Clear();
 					continue;
 				}
 				else {
