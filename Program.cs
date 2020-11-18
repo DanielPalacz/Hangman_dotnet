@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.Timers;
@@ -86,7 +87,7 @@ namespace Hangman_dotnet
 			return _capitalCharsNotWhite;
 		}
 
-		public void RunGame(Player PlayerObj) {
+		public String RunGame(Player PlayerObj) {
 			Console.Clear();
 			Console.WriteLine("Hello in the Hangman! Lets play!\n\n");
 			PrintGameInstructionBoard();
@@ -108,17 +109,20 @@ namespace Hangman_dotnet
 				PrintHint();
 			}
 			gameWatcher.Stop();
+			String output = "";
 			if (_gameEndWin) {
 				Console.WriteLine();
-				Console.WriteLine("You Win. The word/capital was guessed by you in {0} game iteration. It took you {1} seconds.", 
+				Console.WriteLine("You Win. The word/capital was guessed by you in {0} game iteration. It took you {1} seconds.",
 					_guessingTries, gameWatcher.ElapsedMilliseconds / 1000);
 				//Console.WriteLine("{0}|{1}/10|{2}sec|{3}|", DateTime.Now, _lifePoints, gameWatcher.ElapsedMilliseconds/1000, _capital);
+				output = output + DateTime.Now.ToString() + "|" + gameWatcher.ElapsedMilliseconds / 1000 + "|" + _guessingTries + "|" + _capital;
 			}
 			else if (_gameEnd) {
 				Console.WriteLine();
 				Console.WriteLine("You failled. The word/capital was Not guessed by you in {0} game iteration. The Game took you {1} seconds.", 
 					_guessingTries, gameWatcher.ElapsedMilliseconds / 1000);
 			}
+			return output;
 		}
 
 		private Char GetPlayerGameNextTypeOfMove() {
@@ -313,22 +317,59 @@ namespace Hangman_dotnet
 		public TimerException(string message): base(message) {
 		}
 	}
-	
 
-    class Program
+	class ScoresFileHandler {
+		private String _pathAbs;
+		private String _theBestGameResult;
+
+		public ScoresFileHandler() {
+			_theBestGameResult = "";
+			_pathAbs = System.IO.Directory.GetCurrentDirectory() + "\\" + "HighScores.txt";
+			if (!File.Exists(_pathAbs)) {
+				using (StreamWriter sw = File.CreateText(_pathAbs)) {
+					sw.WriteLine("Name|date|guessing_time|guessing_tries|guessed_word");
+				}
+			}
+		}
+
+		public void CompareWithTheBestGameResult(String lastWinGameRow) {
+			if (_theBestGameResult.Length == 0) {
+				_theBestGameResult = lastWinGameRow;
+			}
+			else {
+				int lastGuessingTime = Int32.Parse(lastWinGameRow.Split("|")[1]);
+				int previousTheBestResultTime = Int32.Parse(_theBestGameResult.Split("|")[1]);
+				if (lastGuessingTime < previousTheBestResultTime) {
+					_theBestGameResult = lastWinGameRow;
+				}
+
+			}
+		}
+
+		public void SaveTheBestResultToFile(String playerName) {
+			using (StreamWriter sw = File.AppendText(_pathAbs)) {
+				sw.WriteLine(playerName + "|" + _theBestGameResult);
+			}
+		}
+	}
+
+
+
+		class Program
     {
         static void Main(String[] args) {			
 			// Get Random Country-Capital:
-			FileParserBase fpb = new FileParserBase("countries_and_capitals.txt");
+			FileParserBase fpb = new FileParserBase(System.IO.Directory.GetCurrentDirectory() + "\\countries_and_capitals.txt");
 			String RCountry = fpb.GetRandomCountry();
+			ScoresFileHandler scoresHandlerObj = new ScoresFileHandler();
+			// Console.ReadKey();
 			while (true) {
 				// Start playing:
 				Game HangmanGameObj = new Game(fpb.GetCountryCapital(RCountry), RCountry);
-				//Console.WriteLine("What is your name?");
-				//String playerName = Console.ReadLine();
 				Player FirstPlayerEver = new Player();
-				HangmanGameObj.RunGame(FirstPlayerEver);
+				String gameRow = HangmanGameObj.RunGame(FirstPlayerEver);
 				//
+				scoresHandlerObj.CompareWithTheBestGameResult(gameRow);
 				Console.WriteLine("\n\n");
 				Console.WriteLine("Do you want to play again? Type 'y' or 'Y' if yes.");
 				Char playFurther = Console.ReadKey().KeyChar;
@@ -337,6 +378,10 @@ namespace Hangman_dotnet
 					continue;
 				}
 				else {
+					Console.WriteLine("\nOk, then we are ending game. Lets save your the best today results.");
+					Console.WriteLine("By the way.... what is your name?");
+					String playerName = Console.ReadLine();
+					scoresHandlerObj.SaveTheBestResultToFile(playerName);
 					break;
 				}
 			}

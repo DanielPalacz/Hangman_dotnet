@@ -1,0 +1,3 @@
+Name|date|guessing_time|guessing_tries|guessed_word
+Daniel|2020-11-18 20:00:32|13|1|Juba
+Daniel|2020-11-18 20:02:25|27|2|Lisbon
